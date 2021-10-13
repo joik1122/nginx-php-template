@@ -1,6 +1,6 @@
 ## template-nginx-php
-> Creator: Jonas
-> Date: 2020/11/04
+> Creator: 한승진
+> Date: 2021/10/13
 
 ## Description
 * template-nginx-php 쿠버네티스 repository
@@ -17,6 +17,6 @@
 * 실제 배포전, k8s/templates/deployment.yaml의 리소스 설정이 상당히 중요합니다. 
 
 ## Tracing에 대하여
-* 리얼패킹 클라우드 환경에서 Jaeger Tracing을 이용합니다.
+* 클라우드 환경에서 Jaeger Tracing을 이용합니다.
 * 현재 PHP에 대해 Jaeger Client 지원이 미흡하여, Zipkin PHP Client를 Jaeger에 연동하여 사용합니다.
 * 사용법에 대한 예제는 /src/code/example/trace_example.php를 확인해주세요.
