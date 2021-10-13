@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.service.name }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.service.name }}
+      tier: {{ .Values.service.tier }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.service.name }}
+        environment: {{ .Values.environment }}
+        tier: {{ .Values.service.tier }}
+      annotations:
+        sidecar.istio.io/proxyCPU: "10m"
+        sidecar.istio.io/proxyMemory: "64Mi"
+        sidecar.istio.io/proxyMemoryLimit: "64Mi"
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+    spec:
+      volumes:
+      # 타임존
+      - name: tz-config
+        hostPath:
+          path: /usr/share/zoneinfo/Asia/Seoul
+      containers:
+        - name: {{ .Values.container.name }}
+          image: {{ .Values.container.image }}
+          ports:
+            - containerPort: {{ .Values.container.port }}
+          env:
+            - name: environment
+              value: {{ .Values.environment }}
+          imagePullPolicy: {{ .Values.imageConfig.pullPolicy }}
+          volumeMounts:
+            - name: tz-config
+              mountPath: /etc/localtime
+        {{ if .Values.isProd }}
+          readinessProbe:
+            httpGet:
+              path: /healthz.php
+              port: {{ .Values.container.port }}
+            periodSeconds: 60
+        {{ end }}
+        {{ if .Values.resourceLimit }}
+          resources:
+            requests:
+              memory: "200Mi"
+              cpu: "22m"
+            limits:
+              memory: "200Mi"
+        {{ end }}
+      imagePullSecrets:
+        - name: {{ .Values.service.name }}-regcred
+        

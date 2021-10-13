@@ -1,0 +1,10 @@
+environment: development
+imageConfig:
+  pullPolicy: Always
+resourceLimit: true
+isDev: true
+replicas: 1
+
+stage:
+  domain: dev.realpacking.com # 개발 스테이징 도메인
+  gateway: istio-system/internal-istio-ingressgateway # 내부 게이트웨이

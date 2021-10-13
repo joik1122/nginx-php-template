@@ -1,0 +1,18 @@
+environment: development
+service:
+  name: template-nginx-php
+  tier: backend
+  port: 80
+container:
+  name: template-nginx-php
+  port: 80
+  image: rp-registry.kr.ncr.ntruss.com/template-nginx-php
+  #tag: latest
+imageConfig:
+  pullPolicy: IfNotPresent
+replicas: 1
+
+
+# 버저닝 여부 참고 : https://www.notion.so/b6f165d3d346458baf60cb47382760b8#8d24329844cb45d6888a67122df4473c
+useApiVirsionRoute: false # 버저닝 기본 비활성화
+apiVirsionRoutePrefix: v2 # V2 이상부터만 버저닝하세요! externaldomain.realpacking.com/v2/ 자동 라우팅됩니다.

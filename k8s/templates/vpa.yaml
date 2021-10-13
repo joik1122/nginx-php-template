@@ -1,0 +1,15 @@
+#apiVersion: autoscaling.k8s.io/v1beta2
+#kind: VerticalPodAutoscaler
+#metadata:
+#  name: {{ .Values.service.name }}
+#spec:
+#  targetRef:
+#    apiVersion: "apps/v1"
+#    kind:       Deployment
+#    name:       {{ .Values.service.name }}
+#  updatePolicy:
+#    updateMode: "Auto"
+
+# Usage : kubectl get vpa [VPA 이름] --output yaml
+# *추천되는 리소스양을 알려줌 -> 측정하여 Deployment.yaml에 적용
+# *로컬에서 VPA 설치 후 컨테이너 성능 측정하여 deployment에 직접 기입할 것, 라이브에서 VPA 절대 사용 x

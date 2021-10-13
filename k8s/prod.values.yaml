@@ -1,0 +1,14 @@
+environment: production
+imageConfig:
+  pullPolicy: Always
+resourceLimit: true
+isProd: true
+replicas: 1
+
+external:
+  domain: template-nginx-php.realpacking.com # 실제 사용자에게 노출될 도메인
+  gateway: istio-system/istio-ingressgateway # 외부에 실제 노출될 서비스 게이트웨이
+
+stage:
+  domain: prod.realpacking.com # 프로덕션 스테이징 도메인
+  gateway: istio-system/internal-istio-ingressgateway # 내부 게이트웨이

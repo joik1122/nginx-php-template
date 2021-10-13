@@ -1,0 +1,10 @@
+environment: stage
+imageConfig:
+  pullPolicy: Always
+resourceLimit: true
+isStage: true
+replicas: 1
+
+stage:
+  domain: stage.realpacking.com # 스테이지(pre-production) 스테이징 도메인
+  gateway: istio-system/internal-istio-ingressgateway # 내부 게이트웨이 사용

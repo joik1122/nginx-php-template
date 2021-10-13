@@ -1,0 +1,30 @@
+apiVersion: skaffold/v2beta5
+kind: Config
+build:
+  tagPolicy:
+    dateTime:
+      format: "2006-01-02_15-04-05.999_MST"
+      timezone: "Local"
+  artifacts:
+  - image: template-nginx-php
+    docker:
+      dockerfile: Dockerfile
+      network: host
+    sync:
+      manual:
+      - src: 'src/code/**/*.*'
+        dest: "/app/"
+        strip: "src/code/"
+  local:
+    push: false
+    useBuildkit: true
+deploy:
+  helm:
+    releases:
+    - name: template-nginx-php-release
+      chartPath: k8s/
+      artifactOverrides:
+        container.image: template-nginx-php
+      setValueTemplates:
+        imageConfig.pullPolicy: IfNotPresent
+        replicas: 1

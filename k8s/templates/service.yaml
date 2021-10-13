@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name }}
+  labels:
+    app: {{ .Values.service.name }}
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: {{ .Values.service.port }}
+    name: http-{{ .Values.service.name }}
+  selector:
+    app: {{ .Values.service.name }}
+  type: ClusterIP
+  
+{{ if .Values.isProd }}
+## prod 설정이라면, 외부에 노출을 위한 virtual service를 생성함다
+---
+kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: {{ .Values.service.name }}-ext-vs
+  labels:
+    app: {{ .Values.service.name }}
+spec:
+  hosts:
+    - {{ .Values.external.domain }}
+  gateways:
+    - {{ .Values.external.gateway }} 
+  http:
+  {{ if .Values.useApiVirsionRoute }}
+    - match:
+      - uri:
+          prefix: "/{{- .Values.apiVirsionRoutePrefix }}/"
+      - uri:
+          regex: "/{{- .Values.apiVirsionRoutePrefix }}$"
+      rewrite:
+        uri: "/"
+      route:
+          - destination:
+              host: {{ .Values.service.name }}
+  {{ end }}
+  {{ if not .Values.useApiVirsionRoute }}
+    - route:
+        - destination:
+            host: {{ .Values.service.name }}
+  {{ end }}
+{{ end }}
+
+{{ if .Values.stage }}
+---
+kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: {{ .Values.service.name }}-stage-vs
+  labels:
+    app: {{ .Values.service.name }}
+spec:
+  hosts: 
+    - {{ .Values.stage.domain }}
+  gateways:
+    - {{ .Values.stage.gateway }}  #4. Gateway name
+  http:
+  - match:
+    - uri:
+        prefix: "/{{- .Values.service.name }}/"
+    - uri:
+        regex: "/{{- .Values.service.name }}$"
+    rewrite:
+      uri: "/"
+    route:
+    - destination:
+        host: {{ .Values.service.name }}
+---
+kind: DestinationRule
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: {{ .Values.service.name }}
+  labels:
+    app: {{ .Values.service.name }}
+spec:
+  host: {{ .Values.service.name }}
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+{{ end }}
